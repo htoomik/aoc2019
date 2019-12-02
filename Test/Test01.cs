@@ -54,7 +54,7 @@ namespace aoc2019.Test
         public void Part2Solution()
         {
             var solver = new Day01();
-            var data = File.ReadAllLines("C:\\Code\\aoc2019\\Data\\input01_1.txt");
+            var data = File.ReadAllLines("C:\\Code\\aoc2019\\Data\\input01.txt");
             var result = data.Sum(d => solver.Solve2(int.Parse(d)));
 
             _testOutputHelper.WriteLine(result.ToString());
