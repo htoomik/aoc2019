@@ -12,36 +12,41 @@ namespace aoc2019
             var wire2 = Trace(w2);
             var intersections = GetIntersections(wire1, wire2);
 
-            var ints = string.Join(" - ", intersections.Select(i => i.ToString()));
-
-            var nearest = intersections.Min(p => p.ManhattanDistance);
-            return nearest;
+            return intersections.Min(p => p.ManhattanDistance);
         }
 
-        private List<Point> GetIntersections(List<Point> wire1, List<Point> wire2)
+        public int Solve2(string w1, string w2)
         {
-            return wire1
-                .Intersect(wire2)
-                .Where(p => p.ManhattanDistance != 0)
-                .ToList();
+            var wire1 = Trace(w1);
+            var wire2 = Trace(w2);
+            var intersections = GetIntersections(wire1, wire2);
+
+            return intersections.Min(p => wire1[p] + wire2[p]);
         }
 
-        private List<Point> Trace(string path)
+        private static IEnumerable<Point> GetIntersections(Dictionary<Point, int> wire1, Dictionary<Point, int> wire2)
         {
-            var result = new List<Point>();
+            return wire1.Keys.Where(wire2.ContainsKey);
+        }
+
+        private Dictionary<Point, int> Trace(string path)
+        {
+            var result = new Dictionary<Point, int>();
             var segments = path.Split(',');
             var current = new Point(0, 0);
+            var totalSteps = 0;
 
-            result.Add(current);
             foreach (var segment in segments)
             {
                 var direction = segment[0];
                 var steps = int.Parse(segment.Substring(1));
-                var action = Movements[direction];
                 for (var i = 0; i < steps; i++)
                 {
-                    current = action(current);
-                    result.Add(current);
+                    current = Movements[direction](current);
+                    if (!result.ContainsKey(current))
+                    {
+                        result.Add(current, ++totalSteps);
+                    }
                 }
             }
 
@@ -69,11 +74,6 @@ namespace aoc2019
             }
 
             public int ManhattanDistance => Math.Abs(X) + Math.Abs(Y);
-
-            public override string ToString()
-            {
-                return $"{X},{Y}";
-            }
         }
     }
 }
