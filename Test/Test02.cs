@@ -29,7 +29,7 @@ namespace aoc2019.Test
         [Fact]
         public void Part1Solution()
         {
-            var data = File.ReadAllText("C:\\Code\\aoc2019\\Data\\input02.txt");
+            var data = InputDataHelper.Get(2);
             var solver = new Day02();
 
             var result = solver.Solve(data, input =>
@@ -44,7 +44,7 @@ namespace aoc2019.Test
         [Fact]
         public void Part2Solution()
         {
-            var data = File.ReadAllText("C:\\Code\\aoc2019\\Data\\input02.txt");
+            var data = InputDataHelper.Get(2);
 
             for (var i = 0; i < 100; i++)
             {

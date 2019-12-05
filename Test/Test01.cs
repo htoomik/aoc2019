@@ -33,7 +33,7 @@ namespace aoc2019.Test
         public void Part1Solution()
         {
             var solver = new Day01();
-            var data = File.ReadAllLines("C:\\Code\\aoc2019\\Data\\input01_1.txt");
+            var data = InputDataHelper.GetLines(1);
             var result = data.Sum(d => solver.Solve(int.Parse(d)));
 
             _testOutputHelper.WriteLine(result.ToString());
