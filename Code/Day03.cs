@@ -43,9 +43,10 @@ namespace aoc2019
                 for (var i = 0; i < steps; i++)
                 {
                     current = Movements[direction](current);
+                    totalSteps++;
                     if (!result.ContainsKey(current))
                     {
-                        result.Add(current, ++totalSteps);
+                        result.Add(current, totalSteps);
                     }
                 }
             }
