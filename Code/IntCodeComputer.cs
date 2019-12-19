@@ -1,25 +1,43 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace aoc2019
 {
     public class IntCodeComputer
     {
-        public List<int> Run(string instructions, params int[] input)
+        private readonly List<int> _codes;
+        private readonly List<int> _input = new List<int>();
+        private readonly List<int> _output = new List<int>();
+        private int _inputPos;
+        private int _pos;
+
+        public bool Halted { get; private set; }
+
+        public IntCodeComputer(string instructions)
         {
-            var codes = instructions.Split(',').Select(int.Parse).ToList();
+            _codes = instructions.Split(',').Select(int.Parse).ToList();
+        }
 
-            var output = new List<int>();
-            var inputPos = 0;
+        public IntCodeComputer AddInput(params int[] i)
+        {
+            _input.AddRange(i);
+            return this;
+        }
 
-            var pos = 0;
+        public ReadOnlyCollection<int> Output()
+        {
+            return _output.AsReadOnly();
+        }
+
+        public IntCodeComputer Run()
+        {
             var move = 0;
-
 
             while (true)
             {
-                var instruction = codes[pos];
+                var instruction = _codes[_pos];
                 var intCode = instruction % 100;
                 var paramMode1 = GetDigit(instruction, 3);
                 var paramMode2 = GetDigit(instruction, 4);
@@ -32,40 +50,43 @@ namespace aoc2019
 
                 if (intCode == 1)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    var term2 = GetTerm(codes, pos, paramMode2, 2);
-                    var outPos = codes[pos + 3];
-                    codes[outPos] = term1 + term2;
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var outPos = _codes[_pos + 3];
+                    _codes[outPos] = term1 + term2;
                     move = 4;
                 }
                 else if (intCode == 2)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    var term2 = GetTerm(codes, pos, paramMode2, 2);
-                    var outPos = codes[pos + 3];
-                    codes[outPos] = term1 * term2;
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var outPos = _codes[_pos + 3];
+                    _codes[outPos] = term1 * term2;
                     move = 4;
                 }
                 else if (intCode == 3)
                 {
-                    var term1 = input[inputPos++];
-                    var outPos = codes[pos + 1];
-                    codes[outPos] = term1;
+                    if (_inputPos > _input.Count - 1)
+                        return this;
+
+                    var term1 = _input[_inputPos++];
+                    var outPos = _codes[_pos + 1];
+                    _codes[outPos] = term1;
                     move = 2;
                 }
                 else if (intCode == 4)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    output.Add(term1);
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    _output.Add(term1);
                     move = 2;
                 }
                 else if (intCode == 5)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    var term2 = GetTerm(codes, pos, paramMode2, 2);
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
                     if (term1 != 0)
                     {
-                        pos = term2;
+                        _pos = term2;
                         jumped = true;
                     }
                     else
@@ -75,11 +96,11 @@ namespace aoc2019
                 }
                 else if (intCode == 6)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    var term2 = GetTerm(codes, pos, paramMode2, 2);
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
                     if (term1 == 0)
                     {
-                        pos = term2;
+                        _pos = term2;
                         jumped = true;
                     }
                     else
@@ -89,26 +110,27 @@ namespace aoc2019
                 }
                 else if (intCode == 7)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    var term2 = GetTerm(codes, pos, paramMode2, 2);
-                    var outPos = codes[pos + 3];
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var outPos = _codes[_pos + 3];
 
                     var value = term1 < term2 ? 1 : 0;
-                    codes[outPos] = value;
+                    _codes[outPos] = value;
                     move = 4;
                 }
                 else if (intCode == 8)
                 {
-                    var term1 = GetTerm(codes, pos, paramMode1, 1);
-                    var term2 = GetTerm(codes, pos, paramMode2, 2);
-                    var outPos = codes[pos + 3];
+                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var outPos = _codes[_pos + 3];
 
                     var value = term1 == term2 ? 1 : 0;
-                    codes[outPos] = value;
+                    _codes[outPos] = value;
                     move = 4;
                 }
                 else if (intCode == 99)
                 {
+                    Halted = true;
                     break;
                 }
                 else
@@ -117,10 +139,10 @@ namespace aoc2019
                 }
 
                 if (!jumped)
-                    pos += move;
+                    _pos += move;
             }
 
-            return output;
+            return this;
         }
 
 
