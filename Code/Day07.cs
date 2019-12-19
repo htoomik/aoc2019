@@ -30,24 +30,71 @@ namespace aoc2019
             return maxOutput;
         }
 
-        public static int GetFinalOutput(string instructions, IEnumerable<int> permutation, IntCodeComputer computer)
+        public int Solve2(string instructions)
+        {
+            var permutations = Permute(new List<int> { 5, 6, 7, 8, 9 });
+
+            var maxOutput = 0;
+            foreach (var permutation in permutations)
+            {
+                var amps = CreateComputers(instructions);
+                var output = GetOutputForPermutation(amps, permutation);
+                if (output > maxOutput)
+                {
+                    maxOutput = output;
+                }
+            }
+
+            return maxOutput;
+        }
+
+        public List<IntCodeComputer> CreateComputers(string instructions)
+        {
+            var amps = new List<IntCodeComputer>();
+            for (var i = 0; i < 5; i++)
+            {
+                amps.Add(new IntCodeComputer(instructions));
+            }
+
+            return amps;
+        }
+
+        public int GetOutputForPermutation(List<IntCodeComputer> amps, List<int> permutation)
         {
             var input = 0;
             var output = 0;
-            foreach (var amplifier in permutation)
+            for (var i = 0; i < amps.Count; i++)
             {
-                output = computer.Run(instructions, amplifier, input).Single();
-                input = output;
+                var phaseSetting = permutation[i];
+                amps[i].AddInput(phaseSetting);
+            }
+
+            var j = 0;
+            while (true)
+            {
+                if (amps[j].Halted)
+                {
+                    output = amps.Last().Output().Last();
+                    break;
+                }
+
+                amps[j].AddInput(input);
+                amps[j].Run();
+                input = amps[j].Output().Last();
+
+                j++;
+                if (j == amps.Count)
+                    j = 0;
             }
 
             return output;
         }
 
-        public static IEnumerable<IEnumerable<int>> Permute(List<int> inputs)
+        public static IEnumerable<List<int>> Permute(List<int> inputs)
         {
             if (!inputs.Any())
             {
-                yield return Enumerable.Empty<int>();
+                yield return new List<int>();
             }
 
             for (var startingIndex = 0; startingIndex < inputs.Count; startingIndex++)
@@ -63,18 +110,13 @@ namespace aoc2019
             }
         }
 
-        private static IEnumerable<int> Concat(int firstElement, IEnumerable<int> secondSequence)
+        private static List<int> Concat(int firstElement, IEnumerable<int> secondSequence)
         {
-            yield return firstElement;
-            if (secondSequence == null)
-            {
-                yield break;
-            }
+            var result = new List<int> { firstElement };
 
-            foreach (var item in secondSequence)
-            {
-                yield return item;
-            }
+            result.AddRange(secondSequence);
+
+            return result;
         }
     }
 }
