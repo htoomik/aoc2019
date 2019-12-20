@@ -58,8 +58,8 @@ namespace aoc2019
 
                 if (intCode == 1)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
-                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var term1 = GetTerm(paramMode1, 1);
+                    var term2 = GetTerm(paramMode2, 2);
                     var outPos = (int) _codes[_pos + 3];
                     if (paramMode3 == 2)
                         outPos += _relBase;
@@ -69,9 +69,9 @@ namespace aoc2019
                 }
                 else if (intCode == 2)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
-                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
-                    var outPos = GetPosition(_codes, _pos, paramMode3, 3);
+                    var term1 = GetTerm(paramMode1, 1);
+                    var term2 = GetTerm(paramMode2, 2);
+                    var outPos = GetPosition(paramMode3, 3);
                     _codes[outPos] = term1 * term2;
                     move = 4;
                 }
@@ -81,20 +81,20 @@ namespace aoc2019
                         return this;
 
                     var term1 = _input[_inputPos++];
-                    var outPos = GetPosition(_codes, _pos, paramMode1, 1);
+                    var outPos = GetPosition(paramMode1, 1);
                     _codes[outPos] = term1;
                     move = 2;
                 }
                 else if (intCode == 4)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term1 = GetTerm(paramMode1, 1);
                     _output.Add(term1);
                     move = 2;
                 }
                 else if (intCode == 5)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
-                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var term1 = GetTerm(paramMode1, 1);
+                    var term2 = GetTerm(paramMode2, 2);
                     if (term1 != 0)
                     {
                         _pos = (int)term2;
@@ -107,8 +107,8 @@ namespace aoc2019
                 }
                 else if (intCode == 6)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
-                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var term1 = GetTerm(paramMode1, 1);
+                    var term2 = GetTerm(paramMode2, 2);
                     if (term1 == 0)
                     {
                         _pos = (int)term2;
@@ -121,8 +121,8 @@ namespace aoc2019
                 }
                 else if (intCode == 7)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
-                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var term1 = GetTerm(paramMode1, 1);
+                    var term2 = GetTerm(paramMode2, 2);
                     var outPos = (int) _codes[_pos + 3];
                     if (paramMode3 == 2)
                         outPos += _relBase;
@@ -133,8 +133,8 @@ namespace aoc2019
                 }
                 else if (intCode == 8)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
-                    var term2 = GetTerm(_codes, _pos, paramMode2, 2);
+                    var term1 = GetTerm(paramMode1, 1);
+                    var term2 = GetTerm(paramMode2, 2);
                     var outPos = (int) _codes[_pos + 3];
                     if (paramMode3 == 2)
                         outPos += _relBase;
@@ -145,7 +145,7 @@ namespace aoc2019
                 }
                 else if (intCode == 9)
                 {
-                    var term1 = GetTerm(_codes, _pos, paramMode1, 1);
+                    var term1 = GetTerm(paramMode1, 1);
                     _relBase += (int)term1;
                     move = 2;
                 }
@@ -166,25 +166,25 @@ namespace aoc2019
             return this;
         }
 
-        private long GetTerm(Dictionary<int, long> codes, long pos, int paramMode, int offset)
+        private long GetTerm(int paramMode, int offset)
         {
-            var value = codes[(int)pos + offset];
+            var value = _codes[_pos + offset];
             switch (paramMode)
             {
                 case 0:
-                    return codes.ContainsKey((int)value) ? codes[(int)value] : 0;
+                    return _codes.ContainsKey((int)value) ? _codes[(int)value] : 0;
                 case 1:
                     return value;
                 case 2:
-                    return codes.ContainsKey(_relBase + (int)value) ? codes[_relBase + (int)value] : 0;
+                    return _codes.ContainsKey(_relBase + (int)value) ? _codes[_relBase + (int)value] : 0;
                 default:
                     throw new Exception("Unexpected paramMode " + paramMode);
             }
         }
 
-        private int GetPosition(Dictionary<int, long> codes, int pos, int paramMode, int offset)
+        private int GetPosition(int paramMode, int offset)
         {
-            var outPos = (int) codes[_pos + offset];
+            var outPos = (int) _codes[_pos + offset];
             switch (paramMode)
             {
                 case 0:
