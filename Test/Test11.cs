@@ -27,8 +27,19 @@ namespace aoc2019.Test
         {
             var code = InputDataHelper.Get(11);
             var solver = new Day11();
-            var result = solver.Solve(code);
-            _testOutputHelper.WriteLine(result.ToString());
+            var result = solver.Solve(code, 0);
+            _testOutputHelper.WriteLine(result.Count.ToString());
+        }
+
+        [Fact]
+        public void Solve2()
+        {
+            var code = InputDataHelper.Get(11);
+            var solver = new Day11();
+            var result = solver.Solve(code, 1);
+
+            var standardized = solver.Standardize(result);
+            _testOutputHelper.WriteLine(standardized);
         }
     }
 }

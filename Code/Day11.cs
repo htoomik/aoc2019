@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Xunit.Sdk;
 
 namespace aoc2019
 {
@@ -27,7 +26,7 @@ namespace aoc2019
             return squares.Count;
         }
 
-        public int Solve(string code)
+        public Dictionary<Coords, int> Solve(string code, int firstColor)
         {
             var squares = new Dictionary<Coords, int>();
 
@@ -36,7 +35,7 @@ namespace aoc2019
             var d = D.North;
 
             var computer = new IntCodeComputer(code);
-            computer.AddInput(0);
+            computer.AddInput(firstColor);
 
             var outputPos = 0;
             while (!computer.Halted)
@@ -60,7 +59,7 @@ namespace aoc2019
                 computer.AddInput(colorHere);
             }
 
-            return squares.Count;
+            return squares;
         }
 
         private D Turn(D current, int turnDirection)
@@ -88,7 +87,7 @@ namespace aoc2019
         }
 
         [DebuggerDisplay("X {X}, Y {Y}")]
-        private struct Coords
+        public struct Coords
         {
             public int X { get; }
             public int Y { get; }
@@ -113,6 +112,49 @@ namespace aoc2019
             South,
             West,
             NorthAgain
+        }
+
+        public string Standardize(Dictionary<Coords,int> squares)
+        {
+            var minX = squares.Min(s => s.Key.X);
+            var minY = squares.Min(s => s.Key.Y);
+            var maxX = squares.Max(s => s.Key.X);
+            var maxY = squares.Max(s => s.Key.Y);
+
+            var xRange = maxX - minX + 1;
+            var yRange = maxY - minY + 1;
+            var grid = new int[xRange, yRange];
+
+            for (int y = 0; y < yRange; y++)
+            {
+                var adjustedY = y + minY;
+                for (int x = 0; x < xRange; x++)
+                {
+                    var adjustedX = x + minX;
+                    int c;
+                    var coords = new Coords(adjustedX, adjustedY);
+                    if (squares.ContainsKey(coords))
+                        c = squares[coords];
+                    else
+                        c = 0;
+
+                    grid[x, y] = c;
+                }
+            }
+
+            var result = string.Empty;
+            for (int y = 0; y < yRange; y++)
+            {
+                for (int x = 0; x < xRange; x++)
+                {
+                    var number = grid[x, y];
+                    result += number == 1 ? "#" : ".";
+                }
+
+                result += "\r\n";
+            }
+
+            return result.Trim();
         }
     }
 }
