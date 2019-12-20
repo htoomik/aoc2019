@@ -5,15 +5,15 @@ namespace aoc2019
 {
     public class Day07
     {
-        public int Solve(string instructions)
+        public long Solve(string instructions)
         {
             var permutations = Permute(new List<int> { 0, 1, 2, 3, 4 });
 
-            var maxOutput = 0;
+            long maxOutput = 0;
             foreach (var permutation in permutations)
             {
-                var input = 0;
-                var output = 0;
+                long input = 0;
+                long output = 0;
                 foreach (var amplifier in permutation)
                 {
                     var computer = new IntCodeComputer(instructions);
@@ -30,11 +30,11 @@ namespace aoc2019
             return maxOutput;
         }
 
-        public int Solve2(string instructions)
+        public long Solve2(string instructions)
         {
             var permutations = Permute(new List<int> { 5, 6, 7, 8, 9 });
 
-            var maxOutput = 0;
+            long maxOutput = 0;
             foreach (var permutation in permutations)
             {
                 var amps = CreateComputers(instructions);
@@ -59,10 +59,10 @@ namespace aoc2019
             return amps;
         }
 
-        public int GetOutputForPermutation(List<IntCodeComputer> amps, List<int> permutation)
+        public long GetOutputForPermutation(List<IntCodeComputer> amps, List<int> permutation)
         {
-            var input = 0;
-            var output = 0;
+            long input = 0;
+            long output = 0;
             for (var i = 0; i < amps.Count; i++)
             {
                 var phaseSetting = permutation[i];
