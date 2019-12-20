@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 
 namespace aoc2019
 {
@@ -51,6 +52,37 @@ namespace aoc2019
             X = x;
             Y = y;
         }
+
+        public double AngleTo(Asteroid station)
+        {
+            var targetXDistance = X - station.X;
+            var targetYDistance = Y - station.Y;
+
+            if (targetXDistance == 0)
+            {
+                return targetYDistance < 0
+                    ? Math.PI * 3 / 2 // straight up
+                    : Math.PI / 2; // straight down
+            }
+
+            var tan = (double)targetYDistance / targetXDistance;
+
+            return tan == 0
+                ? targetXDistance > 0
+                    ? 0
+                    : Math.PI
+                : targetYDistance > 0
+                    ? Math.Atan(tan)
+                    : Math.Atan(tan) + Math.PI;
+        }
+
+        public double DistanceTo(Asteroid station)
+        {
+            var targetXDistance = X - station.X;
+            var targetYDistance = Y - station.Y;
+
+            return Math.Abs(targetXDistance) + Math.Abs(targetYDistance);
+        }
     }
 
     public class Map
@@ -98,37 +130,15 @@ namespace aoc2019
                 if (blocker == _station)
                     continue;
 
-                var targetXDistance = target.X - _station.X;
-                var targetYDistance = target.Y - _station.Y;
+                var targetAngle = target.AngleTo(_station);
+                var blockerAngle = blocker.AngleTo(_station);
 
-                var blockerXDistance = blocker.X - _station.X;
-                var blockerYDistance = blocker.Y - _station.Y;
-
-                if (targetXDistance == 0 || blockerXDistance == 0)
-                {
-                    if (targetXDistance == blockerXDistance &&
-                        Math.Sign(targetYDistance) == Math.Sign(blockerYDistance) &&
-                        Math.Abs(blockerYDistance) < Math.Abs(targetYDistance))
-                        return (false, blocker);
-                }
-                else if (targetYDistance == 0 || blockerYDistance == 0)
-                {
-                    if (targetYDistance == blockerYDistance &&
-                        Math.Sign(targetXDistance) == Math.Sign(blockerXDistance) &&
-                        Math.Abs(blockerXDistance) < Math.Abs(targetXDistance))
-                        return (false, blocker);
-                }
-                else
-                {
-                    var targetAngle = (decimal)targetXDistance / targetYDistance;
-                    var blockerAngle = (decimal)blockerXDistance / blockerYDistance;
-
-                    if (targetAngle == blockerAngle &&
-                        Math.Sign(targetXDistance) == Math.Sign(blockerXDistance) &&
-                        Math.Sign(targetYDistance) == Math.Sign(blockerYDistance) &&
-                        Math.Abs(blockerXDistance) < Math.Abs(targetXDistance))
-                        return (false, blocker);
-                }
+                var angleIsSame = Math.Abs(targetAngle - blockerAngle) < 0.0001;
+                var targetDistance = target.DistanceTo(_station);
+                var blockerDistance = blocker.DistanceTo(_station);
+                var targetIsBeyondBlocker = targetDistance > blockerDistance;
+                if (angleIsSame && targetIsBeyondBlocker)
+                    return (false, blocker);
             }
 
             return (true, null);
