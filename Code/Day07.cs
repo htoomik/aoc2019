@@ -8,7 +8,6 @@ namespace aoc2019
         public int Solve(string instructions)
         {
             var permutations = Permute(new List<int> { 0, 1, 2, 3, 4 });
-            var computer = new IntCodeComputer(instructions);
 
             var maxOutput = 0;
             foreach (var permutation in permutations)
@@ -17,6 +16,7 @@ namespace aoc2019
                 var output = 0;
                 foreach (var amplifier in permutation)
                 {
+                    var computer = new IntCodeComputer(instructions);
                     output = computer.AddInput(amplifier, input).Run().Output().Single();
                     input = output;
                 }
