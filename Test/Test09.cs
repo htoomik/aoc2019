@@ -65,5 +65,14 @@ namespace aoc2019.Test
             var output = computer.AddInput(1).Run().Output();
             _testOutputHelper.WriteLine(string.Join(",", output));
         }
+
+        [Fact]
+        public void Solve2()
+        {
+            var instructions = InputDataHelper.Get(9).Trim();
+            var computer = new IntCodeComputer(instructions);
+            var output = computer.AddInput(2).Run().Output();
+            _testOutputHelper.WriteLine(string.Join(",", output));
+        }
     }
 }
