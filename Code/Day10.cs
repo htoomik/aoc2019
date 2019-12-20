@@ -44,6 +44,9 @@ namespace aoc2019
     [DebuggerDisplay("{X}, {Y}")]
     public class Asteroid
     {
+        private const double Pi = Math.PI;
+        private const double FullCircle = Pi * 2;
+
         public int X { get; }
         public int Y { get; }
 
@@ -61,19 +64,38 @@ namespace aoc2019
             if (targetXDistance == 0)
             {
                 return targetYDistance < 0
-                    ? Math.PI * 3 / 2 // straight up
-                    : Math.PI / 2; // straight down
+                    ? Pi * 3 / 2 // straight up
+                    : Pi / 2; // straight down
+            }
+
+            if (targetYDistance == 0)
+            {
+                return targetXDistance > 0
+                    ? 0 // to the right
+                    : Pi; // to the left
             }
 
             var tan = (double)targetYDistance / targetXDistance;
 
-            return tan == 0
-                ? targetXDistance > 0
-                    ? 0
-                    : Math.PI
-                : targetYDistance > 0
-                    ? Math.Atan(tan)
-                    : Math.Atan(tan) + Math.PI;
+            var angle = Math.Atan(tan);
+
+            return targetXDistance < 0
+                ? angle + Pi
+                : targetYDistance < 0
+                    ? angle + FullCircle
+                    : angle;
+        }
+
+        public double AdjustedAngleTo(Asteroid station)
+        {
+            var angle = AngleTo(station);
+
+            // Adjust so that straight up becomes 0
+            angle += Pi / 2;
+            if (angle >= FullCircle)
+                angle -= FullCircle;
+
+            return angle;
         }
 
         public double DistanceTo(Asteroid station)
