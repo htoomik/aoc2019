@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -100,7 +99,7 @@ namespace aoc2019.Test
         public void Part1A()
         {
             var result = Day10.Solve(Map);
-            result.ShouldBe(8);
+            result.count.ShouldBe(8);
         }
 
         [Fact]
@@ -123,7 +122,7 @@ namespace aoc2019.Test
             map.GetAsteroidsStationCanView().Count.ShouldBe(33);
 
             var result = Day10.Solve(input);
-            result.ShouldBe(33);
+            result.count.ShouldBe(33);
         }
 
         [Theory]
@@ -211,7 +210,54 @@ namespace aoc2019.Test
             var input = InputDataHelper.Get(10).Replace("\n", "\r\n");
             var result = Day10.Solve(input);
 
-            // 286 too low
+            _testOutputHelper.WriteLine(result.ToString());
+        }
+
+        [Theory]
+        [InlineData(3, 2, 0)]
+        [InlineData(3, 3, 0.25)]
+        [InlineData(2, 3, 0.5)]
+        [InlineData(1, 3, 0.75)]
+        [InlineData(1, 2, 1.0)]
+        [InlineData(1, 1, 1.25)]
+        [InlineData(2, 1, 1.5)]
+        [InlineData(3, 1, 1.75)]
+        public void Angle(int x, int y, double expected)
+        {
+            var station = new Asteroid(2, 2);
+            var asteroid = new Asteroid(x, y);
+            (asteroid.AngleTo(station) / Math.PI).ShouldBe(expected);
+        }
+
+        [Theory]
+        [InlineData(1, 8, 1)]
+        [InlineData(2, 9, 0)]
+        [InlineData(3, 9, 1)]
+        [InlineData(4, 10, 0)]
+        [InlineData(5, 9, 2)]
+        [InlineData(6, 11, 1)]
+        [InlineData(7, 12, 1)]
+        [InlineData(8, 11, 2)]
+        [InlineData(9, 15, 1)]
+        [InlineData(18, 4, 4)]
+        public void Part2(int i, int x, int y)
+        {
+            const string input = @"
+.#....#####...#..
+##...##.#####..##
+##...#...#.#####.
+..#.....X...###..
+..#.#.....#....##";
+            var result = Day10.Solve2(input, 8, 3, i);
+            result.X.ShouldBe(x);
+            result.Y.ShouldBe(y);
+        }
+
+        [Fact]
+        public void Solve2()
+        {
+            var input = InputDataHelper.Get(10).Replace("\n", "\r\n");
+            var result = Day10.Solve2(input, 17, 22, 200);
             _testOutputHelper.WriteLine(result.ToString());
         }
     }
