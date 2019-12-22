@@ -75,21 +75,39 @@ pos=<x= 2, y= 0, z= 4>, vel=<x= 1, y=-1, z=-1>";
             _testOutputHelper.WriteLine(result.ToString());
         }
 
-        // [Fact]
-        // public void Part2()
-        // {
-        //     var solver = new Day12();
-        //     var result = solver.Solve2(Input, _testOutputHelper);
-        //     result.ShouldBe(2772);
-        // }
-        //
-        // [Fact]
-        // public void Solve2()
-        // {
-        //     var input = InputDataHelper.Get(12).Trim();
-        //     var solver = new Day12();
-        //     var result = solver.Solve2(input, _testOutputHelper);
-        //     _testOutputHelper.WriteLine(result.ToString());
-        // }
+        [Fact]
+        public void Part2()
+        {
+            var solver = new Day12();
+            var result = solver.Solve2(Input, _testOutputHelper);
+            result.ShouldBe(2772);
+        }
+
+        [Fact]
+        public void Part2B()
+        {
+            var input = @"
+<x=-8, y=-10, z=0>
+<x=5, y=5, z=10>
+<x=2, y=-7, z=3>
+<x=9, y=-8, z=-3>".Trim();
+            var solver = new Day12();
+            var result = solver.Solve2(input, _testOutputHelper);
+            result.ShouldBe(4686774924);
+        }
+
+        [Fact]
+        public void Solve2()
+        {
+            var input = InputDataHelper.Get(12).Trim();
+            var solver = new Day12();
+            var result = solver.Solve2(input, _testOutputHelper);
+            _testOutputHelper.WriteLine(result.ToString());
+
+            // too low: 5607666906324
+            // trying: 307043147758488
+            // too high: 1465099063465813344
+
+        }
     }
 }
