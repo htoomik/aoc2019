@@ -1,40 +1,81 @@
 using System.Collections.Generic;
 using System.Linq;
+using Xunit.Sdk;
 
 namespace aoc2019
 {
     public class Day14
     {
         private Dictionary<string, Reaction> _reactions;
-        private Dictionary<string, int> _stash;
-        private int _oreUsed;
+        private Dictionary<string, long> _stash;
+        private long _oreUsed;
 
-        public int Solve(string data)
+        public long Solve(string data, long target = 1)
         {
             var reactions = ParseReactions(data);
             _reactions = reactions.ToDictionary(r => r.Output.Name, r => r);
-            _stash = reactions.ToDictionary(r => r.Output.Name, r => 0);
+            _stash = reactions.ToDictionary(r => r.Output.Name, r => 0L);
             _stash["ORE"] = 0;
 
-            Make("FUEL", 1);
+            Make("FUEL", target);
 
             return _oreUsed;
         }
 
-        private void Make(string chemical, int target)
+        public long Solve2(string data)
+        {
+            var reactions = ParseReactions(data);
+            _reactions = reactions.ToDictionary(r => r.Output.Name, r => r);
+            _stash = reactions.ToDictionary(r => r.Output.Name, r => 0L);
+            _stash["ORE"] = 0;
+
+            var oreForOneFuel = new Day14().Solve(data, 1);
+            const long oreInCargo = 1000000000000;
+            var min = oreInCargo / oreForOneFuel;
+            var max = min * 2;
+
+            var guess = max;
+
+            while (true)
+            {
+                var oreForGuess = new Day14().Solve(data, guess);
+                if (oreForGuess > oreInCargo)
+                {
+                    max = guess;
+                }
+
+                if (oreForGuess < oreInCargo)
+                {
+                    min = guess;
+                }
+
+                if (min == max || min == max - 1)
+                {
+                    return min;
+                }
+
+                guess = (min + max) / 2;
+            }
+        }
+
+        private void Make(string chemical, long target)
         {
             if (chemical != "ORE")
             {
                 while (_stash[chemical] < target)
                 {
+                    var quantityNeeded = target - _stash[chemical];
                     var reaction = _reactions[chemical];
+                    var timesToRun = reaction.Output.Quantity >= quantityNeeded
+                        ? 1
+                        : quantityNeeded / reaction.Output.Quantity;
                     foreach (var input in reaction.Inputs)
                     {
-                        Make(input.Name, input.Quantity);
-                        _stash[input.Name] -= input.Quantity;
+                        Make(input.Name, input.Quantity * timesToRun);
+                        _stash[input.Name] -= input.Quantity * timesToRun;
                     }
 
-                    _stash[chemical] += reaction.Output.Quantity;
+                    _stash[chemical] += reaction.Output.Quantity * timesToRun;
                 }
             }
             else
