@@ -13,7 +13,7 @@ namespace aoc2019.Test
 
         public static string Get(int day)
         {
-            return File.ReadAllText($"C:\\Code\\aoc2019\\Data\\input{day:00}.txt");
+            return File.ReadAllText($"C:\\Code\\aoc2019\\Data\\input{day:00}.txt").Replace("\n", "\r\n").Trim();
         }
     }
 }

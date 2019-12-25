@@ -31,6 +31,11 @@ namespace aoc2019
             return this;
         }
 
+        public void SetAddress(int a, int value)
+        {
+            _codes[a] = value;
+        }
+
         public ReadOnlyCollection<long> Output()
         {
             return _output.AsReadOnly();
