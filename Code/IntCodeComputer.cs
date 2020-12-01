@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace aoc2019
 {
     public class IntCodeComputer
     {
         private readonly Dictionary<int, long> _codes;
-        private readonly List<long> _input = new List<long>();
+        private readonly Dictionary<long, long> _input = new Dictionary<long, long>();
         private readonly List<long> _output = new List<long>();
         private int _inputPos;
         private int _pos;
@@ -27,7 +28,11 @@ namespace aoc2019
 
         public IntCodeComputer AddInput(params long[] i)
         {
-            _input.AddRange(i);
+            var offset = _input.Any() ? _input.Keys.Max() + 1 : 0;
+            for (var j = 0; j < i.Length; j++)
+            {
+                _input[j + offset] = i[j];
+            }
             return this;
         }
 
@@ -82,10 +87,8 @@ namespace aoc2019
                 }
                 else if (intCode == 3)
                 {
-                    if (_inputPos > _input.Count - 1)
-                        return this;
-
-                    var term1 = _input[_inputPos++];
+                    var term1 = _input.ContainsKey(_inputPos) ? _input[_inputPos] : 0;
+                    _inputPos++;
                     var outPos = GetPosition(paramMode1, 1);
                     _codes[outPos] = term1;
                     move = 2;
