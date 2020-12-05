@@ -75,17 +75,17 @@ namespace aoc2019
             return paths[oxygen].Count;
         }
 
-        private void PrintStep(string s)
+        private static void PrintStep(string s)
         {
             File.AppendAllLines(OutputPath, new[] { s });
         }
 
-        private void ClearOutput()
+        private static void ClearOutput()
         {
             File.Delete(OutputPath);
         }
 
-        private void PrintMap(HashSet<Coords> walls, List<Coords> visited)
+        private static void PrintMap(HashSet<Coords> walls, List<Coords> visited)
         {
             var minX = Math.Min(visited.Min(v => v.X), walls.Min(v => v.X));
             var maxX = Math.Max(visited.Max(v => v.X), walls.Max(v => v.X));
@@ -95,9 +95,9 @@ namespace aoc2019
             var yRange = maxY - minY + 1;
             var xRange = maxX - minX + 1;
             var output = new char[yRange, xRange];
-            for (int x = 0; x < xRange; x++)
+            for (var x = 0; x < xRange; x++)
             {
-                for (int y = 0; y < yRange; y++)
+                for (var y = 0; y < yRange; y++)
                 {
                     var coords = new Coords(minX + x, minY + y);
                     if (walls.Contains(coords))
@@ -116,9 +116,9 @@ namespace aoc2019
             }
 
             var sb = new StringBuilder();
-            for (int x = 0; x < xRange; x++)
+            for (var x = 0; x < xRange; x++)
             {
-                for (int y = 0; y < yRange; y++)
+                for (var y = 0; y < yRange; y++)
                 {
                     sb.Append(output[y, x]);
                 }
@@ -131,7 +131,7 @@ namespace aoc2019
             File.AppendAllText(OutputPath, sb.ToString());
         }
 
-        private Coords NewCoords(Coords current, int direction)
+        private static Coords NewCoords(Coords current, int direction)
         {
             return direction switch
             {
