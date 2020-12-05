@@ -35,8 +35,6 @@ namespace aoc2019
                 explored.Add(current);
                 var pathToCurrent = paths[current];
 
-                PrintStep($"Now exploring {current.X}, {current.Y}");
-
                 for (var i = 1; i < 5; i++)
                 {
                     var computer = new IntCodeComputer(input);
@@ -68,17 +66,14 @@ namespace aoc2019
                         oxygen = newCoords;
                     }
                 }
-
-                PrintMap(walls, paths.Keys.ToList());
             }
+
+            PrintMap(walls, paths.Keys.ToList());
 
             return paths[oxygen].Count;
         }
 
-        private static void PrintStep(string s)
-        {
-            File.AppendAllLines(OutputPath, new[] { s });
-        }
+
 
         private static void ClearOutput()
         {
@@ -125,8 +120,6 @@ namespace aoc2019
 
                 sb.AppendLine();
             }
-
-            sb.AppendLine("------------------------------");
 
             File.AppendAllText(OutputPath, sb.ToString());
         }
