@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace aoc2019
@@ -83,24 +82,6 @@ namespace aoc2019
                 case D.South: return (x, y + 1);
                 case D.West: return (x - 1, y);
                 default: throw new Exception("Unexpected direction " + d);
-            }
-        }
-
-        [DebuggerDisplay("X {X}, Y {Y}")]
-        public struct Coords
-        {
-            public int X { get; }
-            public int Y { get; }
-
-            public Coords(int x, int y)
-            {
-                X = x;
-                Y = y;
-            }
-
-            public override string ToString()
-            {
-                return $"X {X}, Y {Y}";
             }
         }
 
