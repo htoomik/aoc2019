@@ -20,5 +20,14 @@ namespace aoc2019.Test
             var result = solver.Solve(input);
             _testOutputHelper.WriteLine(result.ToString());
         }
+
+        [Fact]
+        public void Solve2()
+        {
+            var input = InputDataHelper.Get(15);
+            var solver = new Day15();
+            var result = solver.Solve2(input);
+            _testOutputHelper.WriteLine(result.ToString());
+        }
     }
 }

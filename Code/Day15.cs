@@ -9,14 +9,14 @@ namespace aoc2019
     public class Day15
     {
         private const string OutputPath = "C:\\Code\\aoc2019\\Data\\output15.txt";
+        private readonly HashSet<Coords> _walls = new HashSet<Coords>();
+        private Coords _oxygen;
 
         public int Solve(string input)
         {
             var frontier = new Queue<Coords>();
             var paths = new Dictionary<Coords, List<long>>();
             var explored = new HashSet<Coords>();
-            var walls = new HashSet<Coords>();
-            var oxygen = new Coords();
 
             var origin = new Coords(0, 0);
             frontier.Enqueue(origin);
@@ -24,9 +24,8 @@ namespace aoc2019
 
             ClearOutput();
 
-            while (frontier.Any())
+            while (frontier.TryDequeue(out var current))
             {
-                var current = frontier.Dequeue();
                 if (explored.Contains(current))
                 {
                     continue;
@@ -40,7 +39,7 @@ namespace aoc2019
                     var computer = new IntCodeComputer(input);
                     var newCoords = NewCoords(current, i);
 
-                    if (walls.Contains(newCoords))
+                    if (_walls.Contains(newCoords))
                     {
                         continue;
                     }
@@ -54,7 +53,7 @@ namespace aoc2019
 
                     if (output == 0)
                     {
-                        walls.Add(newCoords);
+                        _walls.Add(newCoords);
                     }
                     else if (output == 1)
                     {
@@ -63,24 +62,70 @@ namespace aoc2019
                     else if (output == 2)
                     {
                         frontier.Enqueue(newCoords);
-                        oxygen = newCoords;
+                        _oxygen = newCoords;
                     }
                 }
             }
 
-            PrintMap(walls, paths.Keys.ToList());
+            PrintMap(_walls, paths.Keys.ToList(), _oxygen);
 
-            return paths[oxygen].Count;
+            return paths[_oxygen].Count;
         }
 
+        public int Solve2(string input)
+        {
+            Solve(input);
+            var frontier = new Queue<Coords>();
+            var paths = new Dictionary<Coords, List<Coords>>();
 
+            frontier.Enqueue(_oxygen);
+            paths[_oxygen] = new List<Coords>();
+
+            while (frontier.TryDequeue(out var current))
+            {
+                var neighbours = GetNextSteps(current);
+                foreach (var neighbour in neighbours)
+                {
+                    if (!paths.ContainsKey(neighbour))
+                    {
+                        frontier.Enqueue(neighbour);
+                        paths[neighbour] = new List<Coords>(paths[current]) { current };
+                    }
+                }
+            }
+
+            return paths.Values.Max(p => p.Count);
+        }
+
+        private IEnumerable<Coords> GetNextSteps(Coords current)
+        {
+            if (!_walls.Contains(new Coords(current.X, current.Y - 1)))
+            {
+                yield return new Coords(current.X, current.Y - 1);
+            }
+
+            if (!_walls.Contains(new Coords(current.X, current.Y + 1)))
+            {
+                yield return new Coords(current.X, current.Y + 1);
+            }
+
+            if (!_walls.Contains(new Coords(current.X - 1, current.Y)))
+            {
+                yield return new Coords(current.X - 1, current.Y);
+            }
+
+            if (!_walls.Contains(new Coords(current.X + 1, current.Y)))
+            {
+                yield return new Coords(current.X + 1, current.Y);
+            }
+        }
 
         private static void ClearOutput()
         {
             File.Delete(OutputPath);
         }
 
-        private static void PrintMap(HashSet<Coords> walls, List<Coords> visited)
+        private static void PrintMap(HashSet<Coords> walls, List<Coords> visited, Coords oxygen)
         {
             var minX = Math.Min(visited.Min(v => v.X), walls.Min(v => v.X));
             var maxX = Math.Max(visited.Max(v => v.X), walls.Max(v => v.X));
@@ -98,6 +143,10 @@ namespace aoc2019
                     if (walls.Contains(coords))
                     {
                         output[y, x] = '#';
+                    }
+                    else if (coords.Equals(oxygen))
+                    {
+                        output[y, x] = 'O';
                     }
                     else if (visited.Contains(coords))
                     {
